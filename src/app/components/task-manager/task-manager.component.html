@@ -2,7 +2,7 @@
 <hr />
 <div *ngIf="!isReadOnly" style="margin-bottom: 1em;">
     <button type="button" class="btn btn-sm btn-dark" (click)="showAddTask()" *ngIf="!showAddTaskDisplay">
-        Add New Task
+        <i class="fas fa-plus"></i> Add New Task
     </button>
     <div *ngIf="showAddTaskDisplay">
         <div class="form-row">
@@ -14,11 +14,11 @@
         <button type="button" class="btn btn-dark btn-sm" (click)="closeAddTask()">Cancel</button>
     </div>
 </div>
-<div *ngIf="loadingTasks; else tasksview">
-    <h5>Loading Tasks...</h5>
+<div *ngIf="loadingTasks; else tasksview" style="text-align: center;">
+    <p style="font-weight: bold; font-size: 1em;">Loading Tasks...</p>
 </div>
 <ng-template #tasksview>
-    <table class="table table-responsive" *ngIf="tasks && tasks.length > 0; else noTasks">
+    <table class="table" *ngIf="tasks && tasks.length > 0; else noTasks">
         <thead>
             <tr>
                 <th>Task</th>

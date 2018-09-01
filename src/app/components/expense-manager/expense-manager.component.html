@@ -4,16 +4,21 @@
 <!-- expense add -->
 <div *ngIf="!isReadOnly" style="margin-bottom: 1em;">
     <button type="button" class="btn btn-sm btn-dark" (click)="showAddExpense()" *ngIf="!showAddExpenseDisplay">
-        Add New Expense
+        <i class="fas fa-plus"></i> Add New Expense
     </button>
     <div *ngIf="showAddExpenseDisplay">
-        <div class="form-group">
-            <label>Expense</label>
-            <input type="text" class="form-control" [(ngModel)]="expenseAddName" placeholder="Expense..."/>
-        </div>
-        <div class="form-group">
-            <label>Cost</label>
-            <input type="number" class="form-control" [(ngModel)]="expenseAddCost" placeholder="Cost..."/>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label>Expense</label>
+                <input type="text" class="form-control" [(ngModel)]="expenseAddName" placeholder="Expense..."/>
+            </div>
+            <div class="form-group col-md-2">
+                <label>Cost</label>
+                <input type="number" class="form-control" [(ngModel)]="expenseAddCost" placeholder="Cost... ex. 0.00"/>
+            </div>
+            <div class="form-group col-md-1">
+
+            </div>
         </div>
         <button type="button" style="margin-right: 5px;" class="btn btn-dark btn-sm" (click)="addExpense()" [disabled]="updateBtnDisabled">
             {{ updateBtnText }}
@@ -23,25 +28,47 @@
 </div>
 
 <!-- Expense listing -->
-<div *ngIf="!expensesLoaded; else expensesView">
-    <h5>Loading expenses...</h5>
+<div *ngIf="!expensesLoaded; else expensesView" style="text-align: center;">
+    <p style="font-weight: bold; font-size: 1em;">Loading Expenses...</p>
 </div>
 <ng-template #expensesView>
-    <table class="table table-responsive" *ngIf="expenses && expenses.length > 0; else noExpenses">
+    <table class="table" *ngIf="expenseViewItems && expenseViewItems.length > 0; else noExpenses">
         <thead>
             <tr>
                 <th>Expense</th>
                 <th>Cost</th>
+                <th *ngIf="!isReadOnly"></th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let e of expenses">
-                <td>{{ e.expenseName }}</td>
-                <td>${{ e.expenseCost }}</td>
+            <tr *ngFor="let e of expenseViewItems; let i = index">
+                <td>
+                    <span *ngIf="!e.showEditView">{{ e.expense.expenseName }}</span>
+                    <input *ngIf="e.showEditView" type="text" class="form-control" [(ngModel)]="e.edits.name" placeholder="Edit name..."/>
+                </td>
+                <td>
+                    <span *ngIf="!e.showEditView">${{ e.expense.expenseCost }}</span>
+                    <input *ngIf="e.showEditView" type="text" class="form-control" [(ngModel)]="e.edits.cost" placeholder="Cost..."/>
+                </td>
+                <td *ngIf="!isReadOnly">
+                    <div *ngIf="e.showActions">
+                        <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;" (click)="showExpenseEditView(e, i)">
+                            <i class="far fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-dark">
+                            <i class="far fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <div *ngIf="e.showEditView">
+                        <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;" (click)="saveEditView(e, i)">Save</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;" (click)="hideEditView(e, i)">Cancel</button>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td><strong>Total</strong></td>
                 <td><strong>${{ totalCost() }}</strong></td>
+                <td *ngIf="!isReadOnly"></td>
             </tr>
         </tbody>
     </table>

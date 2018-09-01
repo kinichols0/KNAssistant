@@ -12,13 +12,13 @@ export class ExpenseManagerComponent implements OnInit {
     @Input() viewMode = ViewMode.Page;
 
     viewModeEnum = ViewMode;
-    expenses: Expense[] = [];
     showAddExpenseDisplay: boolean = false;
-    expenseAddName: string = "";
-    expenseAddCost: number = 0;
+    expenseAddName: string;
+    expenseAddCost: number;
     updateBtnText: string;
     updateBtnDisabled: boolean;
     expensesLoaded: boolean = false;
+    expenseViewItems: any[] = [];
 
     constructor(private expenseSvc: ExpenseService) { }
 
@@ -29,20 +29,20 @@ export class ExpenseManagerComponent implements OnInit {
     loadExpenses(): void {
         this.expensesLoaded = false;
         this.expenseSvc.getExpenses().subscribe(response => {
-            this.expenses = response.body;
+            this.setExpenseViewItems(response.body);
             this.expensesLoaded = true;
         });
     }
 
     showAddExpense(): void {
+        this.expenseAddName = "";
+        this.expenseAddCost = null;
         this.updateBtnText = "Add";
         this.updateBtnDisabled = false;
         this.showAddExpenseDisplay = true;
     }
 
     closeAddExpense(): void {
-        this.expenseAddName = '';
-        this.expenseAddCost = 0;
         this.showAddExpenseDisplay = false;
     }
 
@@ -66,9 +66,9 @@ export class ExpenseManagerComponent implements OnInit {
 
     totalCost(): number {
         let num: number = 0;
-        if (this.expenses && this.expenses.length > 0) {
-            for (var i = 0; i < this.expenses.length; i++) {
-                num += this.expenses[i].expenseCost;
+        if (this.expenseViewItems && this.expenseViewItems.length > 0) {
+            for (var i = 0; i < this.expenseViewItems.length; i++) {
+                num += this.expenseViewItems[i].expense.expenseCost;
             }
         }
         return num;
@@ -76,5 +76,37 @@ export class ExpenseManagerComponent implements OnInit {
 
     isPageView(): boolean{
         return this.viewMode == ViewMode.Page;
+    }
+
+    setExpenseViewItems(expenses: Expense[]): any {
+        if(expenses != null && expenses.length > 0){
+            this.expenseViewItems = [];
+            for(var i = 0; i < expenses.length; i++){
+                this.expenseViewItems.push({
+                    expense: expenses[i],
+                    showEditView: false,
+                    showActions: true,
+                    edits: { name: "", cost: 0 }
+                });
+            }
+        }
+    }
+
+    showExpenseEditView(expenseViewItem: any, index: number): void {
+        expenseViewItem.edits.name = expenseViewItem.expense.expenseName;
+        expenseViewItem.edits.cost = expenseViewItem.expense.expenseCost;
+
+        expenseViewItem.showActions = false;
+        expenseViewItem.showEditView = true;
+    }
+
+    hideEditView(expenseViewItem: any, index: number): void {
+        expenseViewItem.showActions = true;
+        expenseViewItem.showEditView = false;
+    }
+    
+    saveEditView(expenseViewItem: any, index: number): void {
+        expenseViewItem.showActions = true;
+        expenseViewItem.showEditView = false;
     }
 }

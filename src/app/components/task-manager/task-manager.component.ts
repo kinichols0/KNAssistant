@@ -19,6 +19,14 @@ export class TaskManagerComponent implements OnInit {
     updateTaskBtnDisabled: boolean;
     loadingTasks: boolean = true;
 
+    public spinnerConfig: any = {
+        bdColor: "rgba(255,255,255,0.8)",
+        size: "medium",
+        color: "#000000",
+        type: "ball-beat",
+        loadingText: 'Loading tasks using a loader...'
+    };
+
     constructor(private taskSvc: TaskService, private $log: LogService) 
     { }
 
@@ -27,10 +35,10 @@ export class TaskManagerComponent implements OnInit {
     }
 
     loadTasks(): void {
-        this.loadingTasks = true;
+        this.toggleTaskLoading(true);
         this.taskSvc.getTasks().subscribe(response => {
             this.tasks = response.body;
-            this.loadingTasks = false;
+            this.toggleTaskLoading(false);
         });
     };
 
@@ -48,6 +56,14 @@ export class TaskManagerComponent implements OnInit {
     showSavingState(): void {
         this.updateTaskBtnDisabled = true;
         this.updateTaskBtnText = "Saving...";
+    }
+
+    toggleTaskLoading(show: boolean): void {
+        if(show){
+            this.loadingTasks = true;            
+        } else {
+            this.loadingTasks = false;
+        }
     }
 
     addTask(): void {
