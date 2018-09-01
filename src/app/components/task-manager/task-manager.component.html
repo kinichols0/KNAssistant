@@ -1,0 +1,44 @@
+<h4>Assigned Tasks</h4>
+<hr />
+<div *ngIf="!isReadOnly" style="margin-bottom: 1em;">
+    <button type="button" class="btn btn-sm btn-dark" (click)="showAddTask()" *ngIf="!showAddTaskDisplay">
+        Add New Task
+    </button>
+    <div *ngIf="showAddTaskDisplay">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <input type="text" class="form-control" [(ngModel)]="taskText" placeholder="Add Task..."/>
+            </div>
+        </div>
+        <button type="button" style="margin-right: 5px;" class="btn btn-dark btn-sm" (click)="addTask()" [disabled]="updateTaskBtnDisabled">{{ updateTaskBtnText }}</button>
+        <button type="button" class="btn btn-dark btn-sm" (click)="closeAddTask()">Cancel</button>
+    </div>
+</div>
+<div *ngIf="loadingTasks; else tasksview">
+    <h5>Loading Tasks...</h5>
+</div>
+<ng-template #tasksview>
+    <table class="table table-responsive" *ngIf="tasks && tasks.length > 0; else noTasks">
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Completed</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let task of tasks">
+                <td>{{ task.taskText }}</td>
+                <td *ngIf="!isReadOnly; else readOnlyDoneStatus">
+                    <input type="checkbox" [(ngModel)]="task.done" />
+                </td>
+                <ng-template #readOnlyDoneStatus>
+                    <td>{{ task.done ? 'Yes' : 'No'}}</td>
+                </ng-template>
+            </tr>
+        </tbody>
+    </table>
+    <ng-template #noTasks>
+        <h4>No tasks to display.</h4>
+    </ng-template>
+</ng-template>
+    

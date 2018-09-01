@@ -1,0 +1,51 @@
+<h4>Monthly Expenses</h4>
+<hr />
+
+<!-- expense add -->
+<div *ngIf="!isReadOnly" style="margin-bottom: 1em;">
+    <button type="button" class="btn btn-sm btn-dark" (click)="showAddExpense()" *ngIf="!showAddExpenseDisplay">
+        Add New Expense
+    </button>
+    <div *ngIf="showAddExpenseDisplay">
+        <div class="form-group">
+            <label>Expense</label>
+            <input type="text" class="form-control" [(ngModel)]="expenseAddName" placeholder="Expense..."/>
+        </div>
+        <div class="form-group">
+            <label>Cost</label>
+            <input type="number" class="form-control" [(ngModel)]="expenseAddCost" placeholder="Cost..."/>
+        </div>
+        <button type="button" style="margin-right: 5px;" class="btn btn-dark btn-sm" (click)="addExpense()" [disabled]="updateBtnDisabled">
+            {{ updateBtnText }}
+        </button>
+        <button type="button" class="btn btn-dark btn-sm" (click)="closeAddExpense()">Cancel</button>
+    </div>
+</div>
+
+<!-- Expense listing -->
+<div *ngIf="!expensesLoaded; else expensesView">
+    <h5>Loading expenses...</h5>
+</div>
+<ng-template #expensesView>
+    <table class="table table-responsive" *ngIf="expenses && expenses.length > 0; else noExpenses">
+        <thead>
+            <tr>
+                <th>Expense</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let e of expenses">
+                <td>{{ e.expenseName }}</td>
+                <td>${{ e.expenseCost }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total</strong></td>
+                <td><strong>${{ totalCost() }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    <ng-template #noExpenses>
+        <h4>No expenses to display.</h4>
+    </ng-template>
+</ng-template>
