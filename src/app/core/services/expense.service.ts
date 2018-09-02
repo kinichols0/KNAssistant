@@ -43,4 +43,11 @@ export class ExpenseService extends BaseService {
             observe: "response"
         }).pipe(catchError(this.handleError));
     }
+
+    deleteExpense(expense: Expense): Observable<HttpResponse<Expense>> {
+        this.$log.info("Making request to delete expense");
+        return this.http.delete<Expense>(this.url + `?id=${expense.expenseId}`, {
+            observe: "response"
+        }).pipe(catchError(this.handleError));
+    }
 }

@@ -64,4 +64,10 @@ export class TaskService extends BaseService {
             catchError(this.handleError)
         );
     }
+
+    deleteTask(id: number): Observable<HttpResponse<TaskItem>> {
+        return this.http.delete<TaskItem>(this.url + "?id=" + id, {
+            observe: 'response'
+        }).pipe(catchError(this.handleError));
+    }
 }

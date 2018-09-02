@@ -123,4 +123,10 @@ export class ExpenseManagerComponent implements OnInit {
         expenseViewItem.disableInputs = true;
         expenseViewItem.editButtonText = "Saving...";
     }
+
+    delete(expenseViewItem: any, index: number): void{
+        this.expenseService.deleteExpense(expenseViewItem.expense).subscribe(response => {
+            this.loadExpenses();
+        });
+    }
 }

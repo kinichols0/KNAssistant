@@ -27,7 +27,7 @@ export class TaskManagerComponent implements OnInit {
         loadingText: 'Loading tasks using a loader...'
     };
 
-    constructor(private taskSvc: TaskService, private $log: LogService) 
+    constructor(private taskService: TaskService, private $log: LogService) 
     { }
 
     ngOnInit(): void {
@@ -36,7 +36,7 @@ export class TaskManagerComponent implements OnInit {
 
     loadTasks(): void {
         this.toggleTaskLoading(true);
-        this.taskSvc.getTasks().subscribe(response => {
+        this.taskService.getTasks().subscribe(response => {
             this.tasks = response.body;
             this.toggleTaskLoading(false);
         });
@@ -72,12 +72,18 @@ export class TaskManagerComponent implements OnInit {
             let task: TaskItem = new TaskItem();
             task.taskText = this.taskText;
             task.done = false;
-            this.taskSvc.createTask(task).subscribe(response => {
+            this.taskService.createTask(task).subscribe(response => {
                 this.closeAddTask();
                 this.loadTasks();
             });
             return;
         }
         this.closeAddTask();
+    }
+
+    deleteTask(task: TaskItem): void {
+        this.taskService.deleteTask(task.id).subscribe(response => {
+            this.loadTasks();
+        });
     }
 }

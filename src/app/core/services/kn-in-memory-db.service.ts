@@ -1,21 +1,14 @@
 import { Injectable } from '@angular/core';
-
 import { 
     InMemoryDbService, RequestInfo, ResponseOptions, getStatusText, STATUS 
 } from 'angular-in-memory-web-api';
-
 import { Observable, of, throwError } from 'rxjs';
-
 import { TaskItem } from '../models/task-item.model';
-
 import { Expense } from '../models/expense.model';
-
 import { LogService } from '../models/log-service.model';
 
 const taskEndpoint: string = "task";
-
 const expenseEndpoint: string = "expense";
-
 const noteEndpoint: string = "note";
 
 @Injectable()
@@ -63,6 +56,65 @@ export class KnInMemeroryDbService implements InMemoryDbService {
             return this.updateTask(reqInfo);
         }
         return undefined;
+    }
+
+    delete(reqInfo: RequestInfo): Observable<Response>{
+        let name = reqInfo.collectionName;
+        this.$log.info("In memory DELETE request for: " + name);
+        if(name === expenseEndpoint) {
+            this.$log.info("Updating expense in in-memory db");
+            return this.deleteExpense(reqInfo);
+        } else if (name === taskEndpoint){
+            this.$log.info("Updating task in in-memory db");
+            return this.deleteTaskItem(reqInfo);
+        }
+        return undefined;
+    }
+
+    private deleteExpense(reqInfo: RequestInfo): Observable<Response> {
+        return reqInfo.utils.createResponse$(() => {
+            try{
+                let id: string = reqInfo.query.get("id")[0];
+                let expense: Expense = this.expenses.find(t => { return t.expenseId === id;});
+                let index = this.expenses.indexOf(expense);
+                this.expenses.splice(index, 1);
+
+                let options: ResponseOptions = {
+                    body: reqInfo.utils.getConfig().dataEncapsulation ? { expense } : expense,
+                    status: STATUS.OK
+                };
+                return this.finishOptions(options, reqInfo);
+            } catch (e){
+                let options: ResponseOptions = {
+                    body: "There was an error while deleting the expense in the db.",
+                    status: STATUS.INTERNAL_SERVER_ERROR
+                };
+                return this.finishOptions(options, reqInfo);
+            }
+        });
+    }
+
+    private deleteTaskItem(reqInfo: RequestInfo): Observable<Response> {
+        return reqInfo.utils.createResponse$(() => {
+            try{
+                let id: number = +reqInfo.query.get("id")[0];
+                let taskItem: TaskItem = this.tasks.find(t => { return t.id === id;});
+                let index = this.tasks.indexOf(taskItem);
+                this.tasks.splice(index, 1);
+
+                let options: ResponseOptions = {
+                    body: reqInfo.utils.getConfig().dataEncapsulation ? { taskItem } : taskItem,
+                    status: STATUS.OK
+                };
+                return this.finishOptions(options, reqInfo);
+            } catch (e){
+                let options: ResponseOptions = {
+                    body: "There was an error while deleting the task in the db.",
+                    status: STATUS.INTERNAL_SERVER_ERROR
+                };
+                return this.finishOptions(options, reqInfo);
+            }
+        });
     }
 
     private getExpenses(): Expense[] {
