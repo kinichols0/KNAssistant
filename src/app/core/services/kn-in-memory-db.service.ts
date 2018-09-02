@@ -74,7 +74,7 @@ export class KnInMemeroryDbService implements InMemoryDbService {
 
     private deleteExpense(reqInfo: RequestInfo): Observable<Response> {
         return reqInfo.utils.createResponse$(() => {
-            try{
+            try {
                 let id: string = reqInfo.query.get("id")[0];
                 let expense: Expense = this.expenses.find(t => { return t.expenseId === id;});
                 let index = this.expenses.indexOf(expense);
@@ -150,7 +150,7 @@ export class KnInMemeroryDbService implements InMemoryDbService {
     private insertTask(reqInfo: RequestInfo): Observable<Response> {
         return reqInfo.utils.createResponse$(() => {
             let taskItem: TaskItem = reqInfo.utils.getJsonBody(reqInfo.req);
-            this.$log.info(`Request body detected by in memory db: ${JSON.stringify(taskItem)}`);
+            this.$log.debug(`Request body detected by in memory db: ${JSON.stringify(taskItem)}`);
             taskItem.id = this.taskIdGenerator();
             this.tasks.push(taskItem);
 
@@ -186,7 +186,7 @@ export class KnInMemeroryDbService implements InMemoryDbService {
         options.headers.set('x-test', 'test-header');
         const method = reqInfo.method.toUpperCase();
         const body = JSON.stringify(options);
-        this.$log.info(`Response Interceptor: ${method} ${reqInfo.req.url}: \n${body}`);
+        this.$log.debug(`Response Interceptor: ${method} ${reqInfo.req.url}: \n${body}`);
         return options;
     }
 

@@ -6,4 +6,9 @@ import { Component } from '@angular/core';
 })
 export class NavigationBarComponent {
 
+    expanded: boolean = false;
+
+    navTogglerClick(): void {
+        this.expanded = !this.expanded;
+    }
 }

@@ -21,6 +21,11 @@ export class ExpenseManagerComponent implements OnInit {
     expenseViewItems: any[] = [];
     total: number;
 
+    // pie chart
+    pieChartLabels: string[] = [];
+    pieChartData: number[] = [];
+    pieChartType: string = "pie";
+
     constructor(private expenseService: ExpenseService) { }
 
     ngOnInit(): void {
@@ -80,8 +85,10 @@ export class ExpenseManagerComponent implements OnInit {
     }
 
     setExpenseViewItems(expenses: Expense[]): any {
+        this.expenseViewItems = [];
+        this.pieChartData = [];
+        this.pieChartLabels = [];
         if(expenses != null && expenses.length > 0){
-            this.expenseViewItems = [];
             for(var i = 0; i < expenses.length; i++){
                 this.expenseViewItems.push({
                     expense: expenses[i],
@@ -91,6 +98,8 @@ export class ExpenseManagerComponent implements OnInit {
                     disableInputs: false,
                     edits: { name: "", cost: 0 }
                 });
+                this.pieChartData.push(expenses[i].expenseCost);
+                this.pieChartLabels.push(expenses[i].expenseName);
             }
         }
     }
@@ -114,8 +123,8 @@ export class ExpenseManagerComponent implements OnInit {
         expenseViewItem.expense.expenseName = expenseViewItem.edits.name;
         expenseViewItem.expense.expenseCost = expenseViewItem.edits.cost;
         this.expenseService.updateExpense(expenseViewItem.expense).subscribe(response => {
-            this.expenseViewItems[index].expense = response.body;
             this.hideEditView(expenseViewItem, index);
+            this.loadExpenses();
         });
     }
 
@@ -128,5 +137,13 @@ export class ExpenseManagerComponent implements OnInit {
         this.expenseService.deleteExpense(expenseViewItem.expense).subscribe(response => {
             this.loadExpenses();
         });
+    }
+
+    chartClicked(e: any): void {
+        console.log(e);
+    }
+
+    chartHovered(e: any): void {
+        console.log(e);
     }
 }

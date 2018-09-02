@@ -115,8 +115,8 @@ export class TaskManagerComponent implements OnInit {
     }
 
     setTaskListItems(tasks: TaskItem[]): any {
+        this.taskViewItems = [];
         if(tasks && tasks.length > 0) {
-            this.taskViewItems = [];
             for(var i = 0; i < tasks.length; i++) {
                 this.taskViewItems.push({
                     task: tasks[i],
@@ -131,7 +131,7 @@ export class TaskManagerComponent implements OnInit {
         }
     }
 
-    percentCompleted(): string {
+    percentCompleted(): number {
         let num: number = 0;
         if(this.taskViewItems && this.taskViewItems.length > 0) {
             let numberCompleted: number = this.taskViewItems.filter((item) => {
@@ -139,10 +139,10 @@ export class TaskManagerComponent implements OnInit {
             }).length;
             num = numberCompleted / this.taskViewItems.length;
         }
-        return (num * 100).toFixed(2) + "%";
+        return num;
     }
 
-    percentInProgress(): string {
+    percentInProgress(): number {
         let num: number = 0;
         if(this.taskViewItems && this.taskViewItems.length > 0) {
             let numberInProgress: number = this.taskViewItems.filter((item) => {
@@ -150,10 +150,10 @@ export class TaskManagerComponent implements OnInit {
             }).length;
             num = numberInProgress / this.taskViewItems.length;
         }
-        return (num * 100).toFixed(2) + "%";
+        return num;
     }
 
-    percentNotStarted(): string {
+    percentNotStarted(): number {
         let num: number = 0;
         if(this.taskViewItems && this.taskViewItems.length > 0) {
             let numberNotStarted: number = this.taskViewItems.filter((item) => {
@@ -161,6 +161,6 @@ export class TaskManagerComponent implements OnInit {
             }).length;
             num = numberNotStarted / this.taskViewItems.length;
         }
-        return (num * 100).toFixed(2) + "%";
+        return num;
     }
 }

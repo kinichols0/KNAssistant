@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { RoutingModule } from './app.module.routing';
+import { ChartsModule } from 'ng2-charts/ng2-charts';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './components/app.component';
 import { TaskManagerComponent } from './components/task-manager/task-manager.component';
@@ -30,7 +32,9 @@ import { LoggerService } from './core/services/logger.service';
     FormsModule,
     HttpClientModule,
     HttpClientInMemoryWebApiModule.forRoot(KnInMemeroryDbService, { dataEncapsulation: false }),
-    RoutingModule
+    RoutingModule,
+    ChartsModule,
+    NgbModule
   ],
   providers: [
     { provide: LogService, useClass: LoggerService }

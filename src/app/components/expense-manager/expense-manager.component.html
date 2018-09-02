@@ -1,4 +1,4 @@
-<h4>Monthly Expenses</h4>
+<h4>Monthly Expenses <i class="far fa-money-bill-alt"></i></h4>
 <hr />
 
 <!-- expense add -->
@@ -32,47 +32,66 @@
     <p style="font-weight: bold; font-size: 1em;">Loading Expenses...</p>
 </div>
 <ng-template #expensesView>
-    <table class="table" *ngIf="expenseViewItems && expenseViewItems.length > 0; else noExpenses">
-        <thead>
-            <tr>
-                <th>Expense</th>
-                <th>Cost</th>
-                <th *ngIf="!isReadOnly"></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let e of expenseViewItems; let i = index">
-                <td>
-                    <span *ngIf="!e.showEditView">{{ e.expense.expenseName }}</span>
-                    <input *ngIf="e.showEditView" type="text" class="form-control" [(ngModel)]="e.edits.name" placeholder="Edit name..." [disabled]="e.disableInputs"/>
-                </td>
-                <td>
-                    <span *ngIf="!e.showEditView">${{ e.expense.expenseCost }}</span>
-                    <input *ngIf="e.showEditView" type="text" class="form-control" [(ngModel)]="e.edits.cost" placeholder="Cost..." [disabled]="e.disableInputs"/>
-                </td>
-                <td *ngIf="!isReadOnly">
-                    <div *ngIf="e.showActions">
-                        <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;" (click)="showExpenseEditView(e, i)">
-                            <i class="far fa-edit"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-dark" (click)="delete(e, i)">
-                            <i class="far fa-trash-alt"></i>
-                        </button>
-                    </div>
-                    <div *ngIf="e.showEditView">
-                        <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;" (click)="saveEditView(e, i)" [disabled]="e.disableInputs">{{ e.editButtonText }}</button>
-                        <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;" (click)="hideEditView(e, i)" [disabled]="e.disableInputs">Cancel</button>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td><strong>Total</strong></td>
-                <td><strong>${{ totalCost() }}</strong></td>
-                <td *ngIf="!isReadOnly"></td>
-            </tr>
-        </tbody>
-    </table>
+    <ng-container 
+        *ngIf="expenseViewItems && expenseViewItems.length > 0; then expenseListing; else noExpenses">
+    </ng-container>
+    <ng-template #expenseListing>
+        <!-- Pie chart -->
+        <div class="row">
+            <div class="col" *ngIf="!isReadOnly">
+                <!-- Expense listing -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Expense</th>
+                            <th>Cost</th>
+                            <th *ngIf="!isReadOnly"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let e of expenseViewItems; let i = index">
+                            <td>
+                                <span *ngIf="!e.showEditView">{{ e.expense.expenseName }}</span>
+                                <input *ngIf="e.showEditView" type="text" class="form-control" [(ngModel)]="e.edits.name" placeholder="Edit name..." [disabled]="e.disableInputs"/>
+                            </td>
+                            <td>
+                                <span *ngIf="!e.showEditView">${{ e.expense.expenseCost }}</span>
+                                <input *ngIf="e.showEditView" type="text" class="form-control" [(ngModel)]="e.edits.cost" placeholder="Cost..." [disabled]="e.disableInputs"/>
+                            </td>
+                            <td *ngIf="!isReadOnly">
+                                <div *ngIf="e.showActions">
+                                    <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;" (click)="showExpenseEditView(e, i)">
+                                        <i class="far fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-dark" (click)="delete(e, i)">
+                                        <i class="far fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                                <div *ngIf="e.showEditView">
+                                    <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;" (click)="saveEditView(e, i)" [disabled]="e.disableInputs">{{ e.editButtonText }}</button>
+                                    <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;" (click)="hideEditView(e, i)" [disabled]="e.disableInputs">Cancel</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col">
+                    <canvas baseChart
+                        [data]="pieChartData"
+                        [labels]="pieChartLabels"
+                        [chartType]="pieChartType"
+                        (chartHover)="chartHovered"
+                        (chartClick)="chartClicked">
+                    </canvas>
+                    <br>
+                    <p class="text-center">
+                        <strong>Total: ${{ totalCost() }}</strong>
+                    </p>
+            </div>
+        </div>
+    </ng-template>
     <ng-template #noExpenses>
-        <h4>No expenses to display.</h4>
+        <p class="text-muted" style="text-align: center; font-weight: bold;">No expense data</p>
     </ng-template>
 </ng-template>
