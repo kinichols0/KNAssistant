@@ -52,6 +52,19 @@ export class KnInMemeroryDbService implements InMemoryDbService {
         return undefined;
     }
 
+    put(reqInfo: RequestInfo): Observable<Response> {
+        let name = reqInfo.collectionName;
+        this.$log.info("In memory PUT request for: " + name);
+        if(name === expenseEndpoint) {
+            this.$log.info("Updating expense in in-memory db");
+            return this.updateExpense(reqInfo);
+        } else if (name === taskEndpoint){
+            this.$log.info("Updating task in in-memory db");
+            return this.updateTask(reqInfo);
+        }
+        return undefined;
+    }
+
     private getExpenses(): Expense[] {
         return this.expenses;
     }
@@ -146,5 +159,59 @@ export class KnInMemeroryDbService implements InMemoryDbService {
 
     private taskIdGenerator(): number {
         return this.tasksIdCounter++;
+    }
+
+    private updateExpense(reqInfo: RequestInfo): Observable<Response> {
+        return reqInfo.utils.createResponse$(() => {
+            try{
+                let expenseItem: Expense = reqInfo.utils.getJsonBody(reqInfo.req);
+                let expenseToUpdate = this.expenses.find((item) => { 
+                    return item.expenseId === expenseItem.expenseId;
+                });
+
+                let index = this.expenses.indexOf(expenseToUpdate);
+                this.expenses[index].expenseName = expenseItem.expenseName;
+                this.expenses[index].expenseCost = expenseItem.expenseCost;
+
+                let options: ResponseOptions = {
+                    body: reqInfo.utils.getConfig().dataEncapsulation ? { expenseItem } : expenseItem,
+                    status: STATUS.OK
+                };
+                return this.finishOptions(options, reqInfo);
+            } catch {
+                let options: ResponseOptions = {
+                    body: "There was an error while updating the expense in the db.",
+                    status: STATUS.INTERNAL_SERVER_ERROR
+                };
+                return this.finishOptions(options, reqInfo);
+            }
+        });
+    }
+
+    private updateTask(reqInfo: RequestInfo): Observable<Response> {
+        return reqInfo.utils.createResponse$(() => {
+            try{
+                let task: TaskItem = reqInfo.utils.getJsonBody(reqInfo.req);
+                let taskItem = this.tasks.find((item) => { 
+                    return item.id === task.id;
+                });
+
+                let index = this.tasks.indexOf(taskItem);
+                this.tasks[index].taskText = task.taskText;
+                this.tasks[index].done = task.done;
+
+                let options: ResponseOptions = {
+                    body: reqInfo.utils.getConfig().dataEncapsulation ? { task } : task,
+                    status: STATUS.OK
+                };
+                return this.finishOptions(options, reqInfo);
+            } catch {
+                let options: ResponseOptions = {
+                    body: "There was an error while update the task in the db.",
+                    status: STATUS.INTERNAL_SERVER_ERROR
+                };
+                return this.finishOptions(options, reqInfo);
+            }
+        });
     }
 }

@@ -19,8 +19,9 @@ export class ExpenseManagerComponent implements OnInit {
     updateBtnDisabled: boolean;
     expensesLoaded: boolean = false;
     expenseViewItems: any[] = [];
+    total: number;
 
-    constructor(private expenseSvc: ExpenseService) { }
+    constructor(private expenseService: ExpenseService) { }
 
     ngOnInit(): void {
         this.loadExpenses();
@@ -28,7 +29,7 @@ export class ExpenseManagerComponent implements OnInit {
 
     loadExpenses(): void {
         this.expensesLoaded = false;
-        this.expenseSvc.getExpenses().subscribe(response => {
+        this.expenseService.getExpenses().subscribe(response => {
             this.setExpenseViewItems(response.body);
             this.expensesLoaded = true;
         });
@@ -50,7 +51,7 @@ export class ExpenseManagerComponent implements OnInit {
         this.showSavingState();
         if (this.expenseAddName.trim() != "" && this.expenseAddCost != null && this.expenseAddCost != undefined) {
             let expense: Expense = new Expense(this.expenseAddName, this.expenseAddCost);
-            this.expenseSvc.createExpense(expense).subscribe(response => {
+            this.expenseService.createExpense(expense).subscribe(response => {
                 this.closeAddExpense();
                 this.loadExpenses();
             });
@@ -68,7 +69,7 @@ export class ExpenseManagerComponent implements OnInit {
         let num: number = 0;
         if (this.expenseViewItems && this.expenseViewItems.length > 0) {
             for (var i = 0; i < this.expenseViewItems.length; i++) {
-                num += this.expenseViewItems[i].expense.expenseCost;
+                num += +this.expenseViewItems[i].expense.expenseCost;
             }
         }
         return num;
@@ -86,6 +87,8 @@ export class ExpenseManagerComponent implements OnInit {
                     expense: expenses[i],
                     showEditView: false,
                     showActions: true,
+                    editButtonText: "Update",
+                    disableInputs: false,
                     edits: { name: "", cost: 0 }
                 });
             }
@@ -95,7 +98,8 @@ export class ExpenseManagerComponent implements OnInit {
     showExpenseEditView(expenseViewItem: any, index: number): void {
         expenseViewItem.edits.name = expenseViewItem.expense.expenseName;
         expenseViewItem.edits.cost = expenseViewItem.expense.expenseCost;
-
+        expenseViewItem.disableInputs = false;
+        expenseViewItem.editButtonText = "Update";
         expenseViewItem.showActions = false;
         expenseViewItem.showEditView = true;
     }
@@ -106,7 +110,17 @@ export class ExpenseManagerComponent implements OnInit {
     }
     
     saveEditView(expenseViewItem: any, index: number): void {
-        expenseViewItem.showActions = true;
-        expenseViewItem.showEditView = false;
+        this.initUpdateState(expenseViewItem);
+        expenseViewItem.expense.expenseName = expenseViewItem.edits.name;
+        expenseViewItem.expense.expenseCost = expenseViewItem.edits.cost;
+        this.expenseService.updateExpense(expenseViewItem.expense).subscribe(response => {
+            this.expenseViewItems[index].expense = response.body;
+            this.hideEditView(expenseViewItem, index);
+        });
+    }
+
+    initUpdateState(expenseViewItem: any): void {
+        expenseViewItem.disableInputs = true;
+        expenseViewItem.editButtonText = "Saving...";
     }
 }

@@ -27,13 +27,20 @@ export class ExpenseService extends BaseService {
         );
     }
 
-    createExpense(expense: Expense): Observable<HttpResponse<Expense>>{
+    createExpense(expense: Expense): Observable<HttpResponse<Expense>> {
         this.$log.info("Making request to create expense");
         return this.http.post<Expense>(this.url, expense, {
             observe: 'response',
             headers: new HttpHeaders({
                 "Content-Type": "application/json"
             })
+        }).pipe(catchError(this.handleError));
+    }
+
+    updateExpense(expense: Expense): Observable<HttpResponse<Expense>> {
+        this.$log.info("Make request to update expense");
+        return this.http.put<Expense>(this.url, expense, {
+            observe: "response"
         }).pipe(catchError(this.handleError));
     }
 }

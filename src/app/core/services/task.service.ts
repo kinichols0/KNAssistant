@@ -50,4 +50,18 @@ export class TaskService extends BaseService {
             catchError(this.handleError)
         );
     }
+
+    updateTask(taskItem: TaskItem): Observable<HttpResponse<TaskItem>> {
+        return this.http.put<TaskItem>(this.url, taskItem, {
+            observe: 'response',
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json'
+            })
+        }).pipe(
+            tap(response => {
+
+            }),
+            catchError(this.handleError)
+        );
+    }
 }
