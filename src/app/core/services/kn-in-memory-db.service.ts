@@ -6,6 +6,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { TaskItem } from '../models/task-item.model';
 import { Expense } from '../models/expense.model';
 import { LogService } from '../models/log-service.model';
+import { TaskStatus } from '../enums/task-status.enum';
 
 const taskEndpoint: string = "task";
 const expenseEndpoint: string = "expense";
@@ -32,14 +33,14 @@ export class KnInMemeroryDbService implements InMemoryDbService {
 
     post(reqInfo: RequestInfo): Observable<Response> {
         let name = reqInfo.collectionName;
-        this.$log.info("In memory POST request for: " + name);
+        this.$log.debug("In memory POST request for: " + name);
         if(name === taskEndpoint){
-            this.$log.info("Insertting task into in memory DB");
+            this.$log.debug("Insertting task into in memory DB");
             return this.insertTask(reqInfo);
         } else if(name === noteEndpoint){
 
         } else if(name === expenseEndpoint){
-            this.$log.info("Creating expense in the in memory db");
+            this.$log.debug("Creating expense in the in memory db");
             return this.insertExpense(reqInfo);
         }
         return undefined;
@@ -47,12 +48,12 @@ export class KnInMemeroryDbService implements InMemoryDbService {
 
     put(reqInfo: RequestInfo): Observable<Response> {
         let name = reqInfo.collectionName;
-        this.$log.info("In memory PUT request for: " + name);
+        this.$log.debug("In memory PUT request for: " + name);
         if(name === expenseEndpoint) {
-            this.$log.info("Updating expense in in-memory db");
+            this.$log.debug("Updating expense in in-memory db");
             return this.updateExpense(reqInfo);
         } else if (name === taskEndpoint){
-            this.$log.info("Updating task in in-memory db");
+            this.$log.debug("Updating task in in-memory db");
             return this.updateTask(reqInfo);
         }
         return undefined;
@@ -60,12 +61,12 @@ export class KnInMemeroryDbService implements InMemoryDbService {
 
     delete(reqInfo: RequestInfo): Observable<Response>{
         let name = reqInfo.collectionName;
-        this.$log.info("In memory DELETE request for: " + name);
+        this.$log.debug("In memory DELETE request for: " + name);
         if(name === expenseEndpoint) {
-            this.$log.info("Updating expense in in-memory db");
+            this.$log.debug("Updating expense in in-memory db");
             return this.deleteExpense(reqInfo);
         } else if (name === taskEndpoint){
-            this.$log.info("Updating task in in-memory db");
+            this.$log.debug("Updating task in in-memory db");
             return this.deleteTaskItem(reqInfo);
         }
         return undefined;
@@ -164,9 +165,9 @@ export class KnInMemeroryDbService implements InMemoryDbService {
     
     private loadTasks(): void {
         this.tasks = [
-            { id: this.taskIdGenerator(), taskText: "Take out the trash", done: false},
-            { id: this.taskIdGenerator(), taskText: "Wash the dishes", done: false },
-            { id: this.taskIdGenerator(), taskText: "Go to the gym", done: true }
+            { id: this.taskIdGenerator(), taskText: "Wash the car", status: TaskStatus.NotStarted},
+            { id: this.taskIdGenerator(), taskText: "Grocery shop", status: TaskStatus.NotStarted },
+            { id: this.taskIdGenerator(), taskText: "Go to the gym", status: TaskStatus.NotStarted }
         ];
     }
 
@@ -215,7 +216,7 @@ export class KnInMemeroryDbService implements InMemoryDbService {
 
     private updateExpense(reqInfo: RequestInfo): Observable<Response> {
         return reqInfo.utils.createResponse$(() => {
-            try{
+            try {
                 let expenseItem: Expense = reqInfo.utils.getJsonBody(reqInfo.req);
                 let expenseToUpdate = this.expenses.find((item) => { 
                     return item.expenseId === expenseItem.expenseId;
@@ -242,7 +243,7 @@ export class KnInMemeroryDbService implements InMemoryDbService {
 
     private updateTask(reqInfo: RequestInfo): Observable<Response> {
         return reqInfo.utils.createResponse$(() => {
-            try{
+            try {
                 let task: TaskItem = reqInfo.utils.getJsonBody(reqInfo.req);
                 let taskItem = this.tasks.find((item) => { 
                     return item.id === task.id;
@@ -250,7 +251,8 @@ export class KnInMemeroryDbService implements InMemoryDbService {
 
                 let index = this.tasks.indexOf(taskItem);
                 this.tasks[index].taskText = task.taskText;
-                this.tasks[index].done = task.done;
+                this.tasks[index].status = task.status;
+                task = this.tasks[index];
 
                 let options: ResponseOptions = {
                     body: reqInfo.utils.getConfig().dataEncapsulation ? { task } : task,

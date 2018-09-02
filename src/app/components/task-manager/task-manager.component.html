@@ -15,13 +15,17 @@
         <button type="button" class="btn btn-dark btn-sm" (click)="closeAddTask()">Cancel</button>
     </div>
 </div>
-
 <!-- Task Listing -->
 <div *ngIf="loadingTasks; else tasksview" style="text-align: center;">
     <p style="font-weight: bold; font-size: 1em;">Loading Tasks...</p>
 </div>
 <ng-template #tasksview>
-    <table class="table" *ngIf="tasks && tasks.length > 0; else noTasks">
+    <div class="row">
+        <div class="col text-success">Completed: {{ percentCompleted() }} </div>
+        <div class="col text-warning">In Progress: {{ percentInProgress() }} </div>
+        <div class="col text-danger">Not Started: {{ percentNotStarted() }} </div>
+    </div>
+    <table class="table" *ngIf="taskViewItems && taskViewItems.length > 0; else noTasks">
         <thead>
             <tr>
                 <th>Task</th>
@@ -30,21 +34,43 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let task of tasks">
-                <td>{{ task.taskText }}</td>
-                <td *ngIf="!isReadOnly; else readOnlyDoneStatus">
-                    <input type="checkbox" [(ngModel)]="task.done" />
-                </td>
-                <ng-template #readOnlyDoneStatus>
-                    <td>{{ task.done ? 'Yes' : 'No'}}</td>
+            <tr *ngFor="let t of taskViewItems; let i = index;">
+                <ng-container 
+                    *ngIf="!t.showEditView; then readonlyDisplay; else editDisplay">
+                </ng-container>
+                <ng-template #readonlyDisplay>
+                    <!-- Readonly display -->
+                    <td>{{ t.task.taskText }}</td>
+                    <td>
+                        <span *ngIf="t.task.status == taskStatus.NotStarted">Not Started</span>
+                        <span *ngIf="t.task.status == taskStatus.InProgress">In Progress</span>
+                        <span *ngIf="t.task.status == taskStatus.Completed">Completed</span>
+                    </td>
+                </ng-template>
+                <ng-template #editDisplay>
+                    <!-- Edit display -->
+                    <td>
+                        <input type="text" class="form-control" [(ngModel)]="t.editText" [disabled]="t.disableEditInputs" />
+                    </td>
+                    <td>
+                        <select class="form-control" [(ngModel)]="t.editStatus" [disabled]="t.disableEditInputs">
+                            <option *ngFor="let s of statusOptions" [ngValue]="s.Value">{{ s.Text }}</option>
+                        </select>
+                    </td>
                 </ng-template>
                 <td *ngIf="!isReadOnly">
-                    <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;">
-                        <i class="far fa-edit"></i>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-dark" (click)="deleteTask(task)">
-                        <i class="far fa-trash-alt"></i>
-                    </button>
+                    <div *ngIf="t.showActions">
+                        <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px;" (click)="showEditView(t, i)">
+                            <i class="far fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-dark" (click)="deleteTask(t.task)">
+                            <i class="far fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <div *ngIf="t.showEditView">
+                        <button type="button" class="btn btn-sm btn-outline-dark" style="margin-right: 5px" (click)="saveEditView(t, i)" [disabled]="t.disableEditInputs">{{ t.editBtnText }}</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark" (click)="hideEditView(t, i)" [disabled]="t.disableEditInputs">Cancel</button>
+                    </div>
                 </td>
             </tr>
         </tbody>
