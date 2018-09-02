@@ -2,9 +2,9 @@
 <hr />
 <!-- Task status data -->
 <div class="row" *ngIf="taskViewItems && taskViewItems.length > 0">
-    <div class="col text-success font-weight-bold">Completed: {{ percentCompleted() | percent }} </div>
-    <div class="col text-warning font-weight-bold">In Progress: {{ percentInProgress() | percent }} </div>
-    <div class="col text-danger font-weight-bold">Not Started: {{ percentNotStarted() | percent }} </div>
+    <div class="col text-success font-weight-bold">Completed: {{ percentOfStatus(taskStatus.Completed) | percent }} </div>
+    <div class="col text-warning font-weight-bold">In Progress: {{ percentOfStatus(taskStatus.InProgress) | percent }} </div>
+    <div class="col text-danger font-weight-bold">Not Started: {{ percentOfStatus(taskStatus.NotStarted) | percent }} </div>
     <br/>
     <br/>
 </div>

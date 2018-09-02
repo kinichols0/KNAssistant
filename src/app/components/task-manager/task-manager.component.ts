@@ -13,8 +13,6 @@ export class TaskManagerComponent implements OnInit {
     @Input() isReadOnly: boolean = false;
     @Input() viewMode: ViewMode = ViewMode.Page;
 
-    
-    tasks: TaskItem[] = [];
     taskText: string = '';
     showAddTaskDisplay: boolean = false;
     updateTaskBtnText: string;
@@ -24,7 +22,7 @@ export class TaskManagerComponent implements OnInit {
 
     taskStatus = TaskStatus;
     statusOptions: any[] = [
-        { Text: "Not Completed", Value: TaskStatus.NotStarted },
+        { Text: "Not Started", Value: TaskStatus.NotStarted },
         { Text: "In Progress", Value: TaskStatus.InProgress },
         { Text: "Completed", Value: TaskStatus.Completed }
     ];
@@ -38,7 +36,6 @@ export class TaskManagerComponent implements OnInit {
     loadTasks(): void {
         this.toggleTaskLoading(true);
         this.taskService.getTasks().subscribe(response => {
-            this.tasks = response.body;
             this.setTaskListItems(response.body);
             this.toggleTaskLoading(false);
         });
@@ -131,36 +128,14 @@ export class TaskManagerComponent implements OnInit {
         }
     }
 
-    percentCompleted(): number {
+    percentOfStatus(status: TaskStatus): number {
         let num: number = 0;
         if(this.taskViewItems && this.taskViewItems.length > 0) {
             let numberCompleted: number = this.taskViewItems.filter((item) => {
-                return item.task.status == TaskStatus.Completed;
+                return item.task.status == status;
             }).length;
             num = numberCompleted / this.taskViewItems.length;
         }
         return num;
-    }
-
-    percentInProgress(): number {
-        let num: number = 0;
-        if(this.taskViewItems && this.taskViewItems.length > 0) {
-            let numberInProgress: number = this.taskViewItems.filter((item) => {
-                return item.task.status == TaskStatus.InProgress;
-            }).length;
-            num = numberInProgress / this.taskViewItems.length;
-        }
-        return num;
-    }
-
-    percentNotStarted(): number {
-        let num: number = 0;
-        if(this.taskViewItems && this.taskViewItems.length > 0) {
-            let numberNotStarted: number = this.taskViewItems.filter((item) => {
-                return item.task.status == TaskStatus.NotStarted;
-            }).length;
-            num = numberNotStarted / this.taskViewItems.length;
-        }
-        return num;
-    }
+    };
 }
