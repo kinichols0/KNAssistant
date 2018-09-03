@@ -15,10 +15,10 @@ export class TaskManagerComponent implements OnInit {
 
     taskText: string = '';
     showAddTaskDisplay: boolean = false;
-    updateTaskBtnText: string;
-    updateTaskBtnDisabled: boolean;
+    addTaskBtnText: string = "Add";
     loadingTasks: boolean = true;
     taskViewItems: any[] = [];
+    disableAddTask: boolean = false;
 
     taskStatus = TaskStatus;
     statusOptions: any[] = [
@@ -41,22 +41,6 @@ export class TaskManagerComponent implements OnInit {
         });
     };
 
-    showAddTask(): void {
-        this.updateTaskBtnText = "Add";
-        this.updateTaskBtnDisabled = false;
-        this.showAddTaskDisplay = true;
-    }
-
-    closeAddTask(): void {
-        this.taskText = '';
-        this.showAddTaskDisplay = false;
-    }
-
-    showSavingState(): void {
-        this.updateTaskBtnDisabled = true;
-        this.updateTaskBtnText = "Saving...";
-    }
-
     toggleTaskLoading(show: boolean): void {
         if(show){
             this.loadingTasks = true;            
@@ -66,18 +50,21 @@ export class TaskManagerComponent implements OnInit {
     }
 
     addTask(): void {
-        this.showSavingState();
-        if (this.taskText.trim() != '') {
-            let task: TaskItem = new TaskItem();
-            task.taskText = this.taskText;
-            task.status = TaskStatus.NotStarted;
-            this.taskService.createTask(task).subscribe(response => {
-                this.closeAddTask();
-                this.loadTasks();
-            });
-            return;
-        }
-        this.closeAddTask();
+        if (this.taskText.trim() == '') return;
+
+        this.disableAddTask = true;
+        this.addTaskBtnText = "Saving...";
+
+        let task: TaskItem = new TaskItem();
+        task.taskText = this.taskText;
+        task.status = TaskStatus.NotStarted;
+        
+        this.taskService.createTask(task).subscribe(response => {
+            this.disableAddTask = false;
+            this.addTaskBtnText = "Add";
+            this.taskText = "";
+            this.loadTasks();
+        });
     }
 
     deleteTask(task: TaskItem): void {
