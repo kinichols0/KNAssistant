@@ -1,27 +1,21 @@
 <h4>Assigned Tasks <i class="fas fa-tasks"></i></h4>
 <hr />
 <!-- Task status data -->
-<div class="row" *ngIf="taskViewItems && taskViewItems.length > 0">
+<div class="row" *ngIf="taskViewItems && taskViewItems.length > 0" style="margin-top: 1em;">
     <div class="col text-success font-weight-bold">Completed: {{ percentOfStatus(taskStatus.Completed) | percent }} </div>
     <div class="col text-warning font-weight-bold">In Progress: {{ percentOfStatus(taskStatus.InProgress) | percent }} </div>
     <div class="col text-danger font-weight-bold">Not Started: {{ percentOfStatus(taskStatus.NotStarted) | percent }} </div>
-    <br/>
-    <br/>
 </div>
 
 <!-- Add Task -->
-<div *ngIf="!isReadOnly && !loadingTasks">
-    <button type="button" class="btn btn-sm btn-dark" (click)="showAddTask()" *ngIf="!showAddTaskDisplay">
-        <i class="fas fa-plus"></i> Add New Task
-    </button>
-    <div *ngIf="showAddTaskDisplay">
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <input type="text" class="form-control" [(ngModel)]="taskText" placeholder="Add Task..."/>
-            </div>
+<div *ngIf="!isReadOnly" style="margin-top: 1em;">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <input type="text" class="form-control" [(ngModel)]="taskText" placeholder="Add Task..." [disabled]="disableAddTask"/>
         </div>
-        <button type="button" style="margin-right: 5px;" class="btn btn-dark btn-sm" (click)="addTask()" [disabled]="updateTaskBtnDisabled">{{ updateTaskBtnText }}</button>
-        <button type="button" class="btn btn-dark btn-sm" (click)="closeAddTask()">Cancel</button>
+        <div class="form-group col-md-2">
+            <button type="button" style="margin-right: 5px;" class="btn btn-dark" (click)="addTask()" [disabled]="disableAddTask">{{ addTaskBtnText }}</button>
+        </div>
     </div>
 </div>
 

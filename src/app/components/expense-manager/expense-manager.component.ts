@@ -15,8 +15,8 @@ export class ExpenseManagerComponent implements OnInit {
     showAddExpenseDisplay: boolean = false;
     expenseAddName: string;
     expenseAddCost: number;
-    updateBtnText: string;
-    updateBtnDisabled: boolean;
+    addBtnText: string = "Add";
+    addInputsDisabled: boolean;
     expensesLoaded: boolean = false;
     expenseViewItems: any[] = [];
     total: number;
@@ -40,34 +40,24 @@ export class ExpenseManagerComponent implements OnInit {
         });
     }
 
-    showAddExpense(): void {
-        this.expenseAddName = "";
-        this.expenseAddCost = null;
-        this.updateBtnText = "Add";
-        this.updateBtnDisabled = false;
-        this.showAddExpenseDisplay = true;
-    }
-
-    closeAddExpense(): void {
-        this.showAddExpenseDisplay = false;
-    }
-
     addExpense(): void {
-        this.showSavingState();
-        if (this.expenseAddName.trim() != "" && this.expenseAddCost != null && this.expenseAddCost != undefined) {
-            let expense: Expense = new Expense(this.expenseAddName, this.expenseAddCost);
-            this.expenseService.createExpense(expense).subscribe(response => {
-                this.closeAddExpense();
-                this.loadExpenses();
-            });
-            return;
-        }
-        this.closeAddExpense();
+        if(this.expenseAddCost == undefined || this.expenseAddName.trim() == "") return;
+
+        this.addBtnText = "Saving...";
+        this.addInputsDisabled = true;
+
+        let expense: Expense = new Expense(this.expenseAddName, this.expenseAddCost);
+        this.expenseService.createExpense(expense).subscribe(response => {
+            this.addBtnText = "Add";
+            this.addInputsDisabled = false;
+            this.clearAddExpenseFields();
+            this.loadExpenses();
+        });
     }
 
-    showSavingState(): void {
-        this.updateBtnDisabled = true;
-        this.updateBtnText = "Saving...";
+    clearAddExpenseFields(): void {
+        this.expenseAddCost = undefined;
+        this.expenseAddName = "";
     }
 
     totalCost(): number {
