@@ -1,10 +1,10 @@
 import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { Expense } from '../models/expense.model';
+import { Expense } from '../../models/expense.model';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { BaseLogService } from '../models/base-log-service.model';
-import { BaseService } from '../models/base-service.model';
+import { BaseLogService } from '../../models/base-log-service.model';
+import { BaseService } from '../../models/base-service.model';
 
 @Injectable({
     providedIn: 'root',
@@ -12,6 +12,7 @@ import { BaseService } from '../models/base-service.model';
 export class ExpenseService extends BaseService {
 
     private url: string = "/api/expense";
+    readonly getRequestErrorMsg: string = 'Error requesting exenses.';
 
     constructor(private http: HttpClient, public $log: BaseLogService) { 
         super($log);
@@ -27,7 +28,9 @@ export class ExpenseService extends BaseService {
                 //this.$log.debug("Response:");
                 //this.$log.debug(response);
             }),
-            catchError(this.handleError)
+            catchError((httpErrorResponse) => {
+                return throwError(this.getRequestErrorMsg);
+            })
         );
     }
 
