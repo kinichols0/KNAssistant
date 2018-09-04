@@ -46,7 +46,10 @@ export class ExpenseManagerComponent implements OnInit {
         this.addBtnText = "Saving...";
         this.addInputsDisabled = true;
 
-        let expense: Expense = new Expense(this.expenseAddName, this.expenseAddCost);
+        let expense: Expense = new Expense();
+        expense.expenseName = this.expenseAddName;
+        expense.expenseCost = this.expenseAddCost;
+        
         this.expenseService.createExpense(expense).subscribe(response => {
             this.addBtnText = "Add";
             this.addInputsDisabled = false;

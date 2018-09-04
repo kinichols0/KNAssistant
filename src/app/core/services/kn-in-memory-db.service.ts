@@ -5,7 +5,7 @@ import {
 import { Observable, of, throwError } from 'rxjs';
 import { TaskItem } from '../models/task-item.model';
 import { Expense } from '../models/expense.model';
-import { LogService } from '../models/log-service.model';
+import { BaseLogService } from '../models/base-log-service.model';
 import { TaskStatus } from '../enums/task-status.enum';
 
 const taskEndpoint: string = "task";
@@ -15,7 +15,7 @@ const noteEndpoint: string = "note";
 @Injectable()
 export class KnInMemeroryDbService implements InMemoryDbService {
 
-    constructor(private $log: LogService) { }
+    constructor(private $log: BaseLogService) { }
 
     expenses: Expense[];
     tasks: TaskItem[];

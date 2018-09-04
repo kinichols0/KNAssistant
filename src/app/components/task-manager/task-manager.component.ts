@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TaskItem } from '../../core/models/task-item.model';
 import { TaskService } from '../../core/services/task.service';
 import { ViewMode } from '../../core/enums/view-mode.enum';
-import { LogService } from '../../core/models/log-service.model';
+import { BaseLogService } from '../../core/models/base-log-service.model';
 import { TaskStatus } from '../../core/enums/task-status.enum';
 
 @Component({
@@ -27,7 +27,7 @@ export class TaskManagerComponent implements OnInit {
         { Text: "Completed", Value: TaskStatus.Completed }
     ];
 
-    constructor(private taskService: TaskService, private $log: LogService) { }
+    constructor(private taskService: TaskService, private $log: BaseLogService) { }
 
     ngOnInit(): void {
         this.loadTasks();

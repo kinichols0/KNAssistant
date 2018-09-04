@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { } from '../../../environments/environment';
-import { LogService } from '../models/log-service.model';
+import { BaseLogService } from '../models/base-log-service.model';
 
 @Injectable({
     providedIn: 'root'
 })
-export class LoggerService extends LogService {
+export class LogService extends BaseLogService {
 
+    constructor(){
+        super();
+    }
+    
     info(obj: any): void {
         console.log(obj);
     }

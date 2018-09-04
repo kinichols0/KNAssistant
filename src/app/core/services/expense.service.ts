@@ -3,7 +3,7 @@ import { Expense } from '../models/expense.model';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { LogService } from '../models/log-service.model';
+import { BaseLogService } from '../models/base-log-service.model';
 import { BaseService } from '../models/base-service.model';
 
 @Injectable({
@@ -13,19 +13,19 @@ export class ExpenseService extends BaseService {
 
     private url: string = "/api/expense";
 
-    constructor(private http: HttpClient, public $log: LogService) { 
+    constructor(private http: HttpClient, public $log: BaseLogService) { 
         super($log);
     }
 
     getExpenses(): Observable<HttpResponse<Expense[]>> {
-        this.$log.debug("Expense GET service request");
+        //this.$log.debug("Expense GET service request");
         return this.http.get<Expense[]>(this.url, {
             observe: "response"
         }).pipe(
             retry(2),
             tap(response => {
-                this.$log.debug("Response:");
-                this.$log.debug(response);
+                //this.$log.debug("Response:");
+                //this.$log.debug(response);
             }),
             catchError(this.handleError)
         );
