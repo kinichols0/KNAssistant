@@ -13,20 +13,21 @@ export class ExpenseService extends BaseService {
 
     private url: string = "/api/expense";
     readonly getRequestErrorMsg: string = 'Error requesting exenses.';
+    readonly createExpenseErrorMsg: string = 'Error while creating expenses';
 
     constructor(private http: HttpClient, public $log: BaseLogService) { 
         super($log);
     }
 
     getExpenses(): Observable<HttpResponse<Expense[]>> {
-        //this.$log.debug("Expense GET service request");
+        this.$log.debug("Expense GET service request");
         return this.http.get<Expense[]>(this.url, {
             observe: "response"
         }).pipe(
             retry(2),
             tap(response => {
-                //this.$log.debug("Response:");
-                //this.$log.debug(response);
+                this.$log.debug("Response:");
+                this.$log.debug(response);
             }),
             catchError((httpErrorResponse) => {
                 return throwError(this.getRequestErrorMsg);
@@ -46,7 +47,9 @@ export class ExpenseService extends BaseService {
                 this.$log.debug("Response:");
                 this.$log.debug(response);
             }),
-            catchError(this.handleError)
+            catchError((httpErrorResponse) => {
+                return throwError(this.createExpenseErrorMsg);
+            })
         );
     }
 

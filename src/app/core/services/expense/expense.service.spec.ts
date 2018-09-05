@@ -23,7 +23,7 @@ describe('Expense service', () => {
         TestBed.configureTestingModule({
             imports: [ HttpClientTestingModule ],
             providers: [
-                { provide: BaseLogService, use: LogService },
+                { provide: BaseLogService, useClass: LogService },
                 { provide: APP_BASE_HREF, useValue: "/" },
                 ExpenseService
             ]
@@ -35,7 +35,7 @@ describe('Expense service', () => {
         httpTestingCtrl = TestBed.get(HttpTestingController);
     }));
 
-    describe('GET requests', ()=> {
+    describe('Get expenses request', ()=> {
 
         it('should return Expenses and status 200 Ok on success', async(() => {
             // Mock data to return
@@ -93,4 +93,44 @@ describe('Expense service', () => {
         }));
     });
     
+    describe('createExpense', () => {
+        it('should execute POST request', async(()=> {
+            let expense: Expense = {
+                expenseCost: 750,
+                expenseId: null,
+                expenseName: 'Mortgage'
+            };
+
+            service.createExpense(expense).subscribe(response => {
+                expect(expense.expenseName).toEqual(response.body.expenseName);
+                expect(expense.expenseCost).toEqual(response.body.expenseCost);
+                expect(expense.expenseId).not.toEqual(null);
+            });
+
+            const req = httpTestingCtrl.expectOne('/api/expense', 'call to /api/expense');
+            expect(req.request.method).toBe('POST');
+
+            expense.expenseId = '1';
+            req.flush(expense, { status: 200, statusText: 'Ok' });
+        }));
+
+        it('should return error message on 500 status', async(() => {
+            let expense: Expense = {
+                expenseId: null,
+                expenseName: null,
+                expenseCost: -1
+            };
+
+            service.createExpense(expense).subscribe(response => {
+                fail('Expected a fail');
+            }, (error: HttpErrorResponse) => {
+
+            });
+
+            const req = httpTestingCtrl.expectOne('/api/expense', 'call to /api/expense');
+            expect(req.request.method).toBe('POST');
+
+            req.flush(service.createExpenseErrorMsg, { status: 500, statusText: 'Internal Server Error' });
+        }));
+    });
 });
