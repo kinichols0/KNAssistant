@@ -46,9 +46,7 @@ describe('Expense service', () => {
     
             // Subscribe the getExpenses observable
             service.getExpenses().subscribe(response => {
-                expect(response.body.length).toBe(2);
-                expect(response.status).toEqual(200);
-                expect(response.statusText).toEqual('Ok');
+                expect(response.length).toBe(2);
             });
     
             // Verify one call was made the service and that it was a GET
@@ -102,8 +100,8 @@ describe('Expense service', () => {
             };
 
             service.createExpense(expense).subscribe(response => {
-                expect(expense.expenseName).toEqual(response.body.expenseName);
-                expect(expense.expenseCost).toEqual(response.body.expenseCost);
+                expect(expense.expenseName).toEqual(response.expenseName);
+                expect(expense.expenseCost).toEqual(response.expenseCost);
                 expect(expense.expenseId).not.toEqual(null);
             });
 
@@ -124,7 +122,7 @@ describe('Expense service', () => {
             service.createExpense(expense).subscribe(response => {
                 fail('Expected a fail');
             }, (error: HttpErrorResponse) => {
-
+                expect(error).toEqual(service.createExpenseErrorMsg);
             });
 
             const req = httpTestingCtrl.expectOne('/api/expense', 'call to /api/expense');

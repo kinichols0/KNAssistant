@@ -35,8 +35,8 @@ export class ExpenseManagerComponent implements OnInit {
 
     loadExpenses(): void {
         this.expensesLoaded = false;
-        this.expenseService.getExpenses().subscribe((response: HttpResponse<Expense[]>) => {
-            this.setExpenseViewItems(response.body);
+        this.expenseService.getExpenses().subscribe((response) => {
+            this.setExpenseViewItems(response);
             this.expensesLoaded = true;
         }, (error: HttpErrorResponse) => {
             this.showLoadingExpensesError();

@@ -19,11 +19,9 @@ export class ExpenseService extends BaseService {
         super($log);
     }
 
-    getExpenses(): Observable<HttpResponse<Expense[]>> {
+    getExpenses(): Observable<Expense[]> {
         this.$log.debug("Expense GET service request");
-        return this.http.get<Expense[]>(this.url, {
-            observe: "response"
-        }).pipe(
+        return this.http.get<Expense[]>(this.url).pipe(
             retry(2),
             tap(response => {
                 this.$log.debug("Response:");
@@ -35,10 +33,9 @@ export class ExpenseService extends BaseService {
         );
     }
 
-    createExpense(expense: Expense): Observable<HttpResponse<Expense>> {
+    createExpense(expense: Expense): Observable<Expense> {
         this.$log.debug("Create expense service request");
         return this.http.post<Expense>(this.url, expense, {
-            observe: 'response',
             headers: new HttpHeaders({
                 "Content-Type": "application/json"
             })
@@ -53,11 +50,9 @@ export class ExpenseService extends BaseService {
         );
     }
 
-    updateExpense(expense: Expense): Observable<HttpResponse<Expense>> {
+    updateExpense(expense: Expense): Observable<Expense> {
         this.$log.debug("Update expense service request.");
-        return this.http.put<Expense>(this.url, expense, {
-            observe: "response"
-        }).pipe(
+        return this.http.put<Expense>(this.url, expense).pipe(
             tap(response => { 
                 this.$log.debug("Response");
                 this.$log.debug(response);
@@ -66,11 +61,9 @@ export class ExpenseService extends BaseService {
         );
     }
 
-    deleteExpense(expense: Expense): Observable<HttpResponse<Expense>> {
+    deleteExpense(expense: Expense): Observable<Expense> {
         this.$log.debug("Delete expense service request");
-        return this.http.delete<Expense>(this.url + `?id=${expense.expenseId}`, {
-            observe: "response"
-        }).pipe(
+        return this.http.delete<Expense>(this.url + `?id=${expense.expenseId}`).pipe(
             tap(response => {
                 this.$log.debug("Response:");
                 this.$log.debug(response);
