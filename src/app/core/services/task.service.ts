@@ -19,7 +19,7 @@ export class TaskService extends BaseService {
     }
 
     getTasks(): Observable<HttpResponse<TaskItem[]>> {
-        this.$log.info('Tasks get service request');
+        this.$log.debug('Tasks get service request');
         return this.http.get<TaskItem[]>(this.url, {
             observe: 'response'
         }).pipe(
