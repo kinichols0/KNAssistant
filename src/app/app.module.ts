@@ -15,8 +15,8 @@ import { ExpenseManagerComponent } from './components/expense-manager/expense-ma
 import { NotesManagerComponent } from './components/notes-manager/notes-manager.component';
 import { KnInMemeroryDbService } from './core/services/kn-in-memory-db.service';
 
-import { LogService } from './core/models/log-service.model';
-import { LoggerService } from './core/services/logger.service';
+import { BaseLogService } from './core/models/base-log-service.model';
+import { LogService } from './core/services/log.service';
 
 @NgModule({
   declarations: [
@@ -37,7 +37,7 @@ import { LoggerService } from './core/services/logger.service';
     NgbModule
   ],
   providers: [
-    { provide: LogService, useClass: LoggerService }
+    { provide: BaseLogService, useClass: LogService }
   ],
   bootstrap: [
     AppComponent

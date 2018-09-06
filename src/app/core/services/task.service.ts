@@ -3,7 +3,7 @@ import { TaskItem } from '../models/task-item.model';
 import { MessageService } from './message.service';
 import { Observable, of, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { LogService } from '../models/log-service.model';
+import { BaseLogService } from '../models/base-log-service.model';
 import { map, catchError, retry, tap } from 'rxjs/operators';
 import { BaseService } from '../models/base-service.model';
 
@@ -14,12 +14,12 @@ export class TaskService extends BaseService {
 
     private url: string = "/api/task";
 
-    constructor(private http: HttpClient, private msgSvc: MessageService, public $log: LogService) { 
+    constructor(private http: HttpClient, private msgSvc: MessageService, public $log: BaseLogService) { 
         super($log);
     }
 
     getTasks(): Observable<HttpResponse<TaskItem[]>> {
-        this.$log.info('Tasks get service request');
+        this.$log.debug('Tasks get service request');
         return this.http.get<TaskItem[]>(this.url, {
             observe: 'response'
         }).pipe(

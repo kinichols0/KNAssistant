@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Expense } from '../../core/models/expense.model';
-import { ExpenseService } from '../../core/services/expense.service';
+import { ExpenseService } from '../../core/services/expense/expense.service';
 import { ViewMode } from '../../core/enums/view-mode.enum';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 @Component({
     selector: "expense-manager",
@@ -34,9 +35,11 @@ export class ExpenseManagerComponent implements OnInit {
 
     loadExpenses(): void {
         this.expensesLoaded = false;
-        this.expenseService.getExpenses().subscribe(response => {
-            this.setExpenseViewItems(response.body);
+        this.expenseService.getExpenses().subscribe((response) => {
+            this.setExpenseViewItems(response);
             this.expensesLoaded = true;
+        }, (error: HttpErrorResponse) => {
+            this.showLoadingExpensesError();
         });
     }
 
@@ -46,7 +49,10 @@ export class ExpenseManagerComponent implements OnInit {
         this.addBtnText = "Saving...";
         this.addInputsDisabled = true;
 
-        let expense: Expense = new Expense(this.expenseAddName, this.expenseAddCost);
+        let expense: Expense = new Expense();
+        expense.expenseName = this.expenseAddName;
+        expense.expenseCost = this.expenseAddCost;
+        
         this.expenseService.createExpense(expense).subscribe(response => {
             this.addBtnText = "Add";
             this.addInputsDisabled = false;
@@ -135,5 +141,9 @@ export class ExpenseManagerComponent implements OnInit {
 
     chartHovered(e: any): void {
         console.log(e);
+    }
+
+    showLoadingExpensesError(): void {
+
     }
 }

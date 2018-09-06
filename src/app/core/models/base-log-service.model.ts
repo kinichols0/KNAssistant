@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ILogger } from '../interfaces/logger.interface';
 
 @Injectable()
-export abstract class LogService implements ILogger {
+export abstract class BaseLogService implements ILogger {
 
     abstract info(item: any): void;
 
