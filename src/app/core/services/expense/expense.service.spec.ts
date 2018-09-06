@@ -122,7 +122,7 @@ describe('Expense service', () => {
             service.createExpense(expense).subscribe(response => {
                 fail('Expected a fail');
             }, (error: HttpErrorResponse) => {
-                expect(error).toEqual(service.createExpenseErrorMsg);
+                expect(error).toBeTruthy();
             });
 
             const req = httpTestingCtrl.expectOne('/api/expense', 'call to /api/expense');
